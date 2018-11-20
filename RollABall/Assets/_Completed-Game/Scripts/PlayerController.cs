@@ -32,20 +32,50 @@ public class PlayerController : MonoBehaviour {
 		winText.text = "";
 	}
 
-	// Each physics step..
-	void FixedUpdate ()
-	{
-		// Set some local float variables equal to the value of our Horizontal and Vertical Inputs
-		float moveHorizontal = Input.GetAxis ("Horizontal");
-		float moveVertical = Input.GetAxis ("Vertical");
 
-		// Create a Vector3 variable, and assign X and Z to feature our horizontal and vertical float variables above
-		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
+    void Update()
+    {
 
-		// Add a physical force to our Player rigidbody using our 'movement' Vector3 above, 
-		// multiplying it by 'speed' - our public player speed that appears in the inspector
-		rb.AddForce (movement * speed);
-	}
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            // Exit condition for Desktop devices
+            if (Input.GetKey("escape"))
+                Application.Quit();
+        }
+        else
+        {
+            // Exit condition for mobile devices
+            if (Input.GetKeyDown(KeyCode.Escape))
+                Application.Quit();
+        }
+
+    }
+
+
+    void FixedUpdate()
+    {
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            // Player movement in desktop devices
+            // Definition of force vector X and Y components
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveVertical = Input.GetAxis("Vertical");
+            // Building of force vector
+            Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+            // Adding force to rigidbody
+            rb.AddForce(movement * speed * Time.deltaTime);
+        }
+        else
+        {
+            // Player movement in mobile devices
+            // Building of force vector 
+            Vector3 movement = new Vector3(Input.acceleration.x, 0.0f, Input.acceleration.y);
+            // Adding force to rigidbody
+            rb.AddForce(movement * speed * Time.deltaTime);
+        }
+
+
+    }
 
 	// When this game object intersects a collider with 'is trigger' checked, 
 	// store a reference to that collider in a variable named 'other'..
