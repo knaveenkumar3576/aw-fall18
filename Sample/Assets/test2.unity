@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465785, g: 0.49641252, b: 0.574817, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -367,6 +367,11 @@ Prefab:
     - target: {fileID: 1243165394934358, guid: 1602fef8d0fc14a139fe90c67e4a377e, type: 2}
       propertyPath: m_Name
       value: Answer Board (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114569173159386254, guid: 1602fef8d0fc14a139fe90c67e4a377e,
+        type: 2}
+      propertyPath: m_Text
+      value: X
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1602fef8d0fc14a139fe90c67e4a377e, type: 2}
@@ -1043,6 +1048,11 @@ Prefab:
       propertyPath: m_Name
       value: Answer Board (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 114569173159386254, guid: 1602fef8d0fc14a139fe90c67e4a377e,
+        type: 2}
+      propertyPath: m_Text
+      value: X
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1602fef8d0fc14a139fe90c67e4a377e, type: 2}
   m_IsPrefabAsset: 0
@@ -1223,6 +1233,11 @@ Prefab:
         type: 2}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114569173159386254, guid: 1602fef8d0fc14a139fe90c67e4a377e,
+        type: 2}
+      propertyPath: m_Text
+      value: X
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1602fef8d0fc14a139fe90c67e4a377e, type: 2}
@@ -1520,6 +1535,11 @@ Prefab:
       propertyPath: m_Name
       value: Answer Board (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 114569173159386254, guid: 1602fef8d0fc14a139fe90c67e4a377e,
+        type: 2}
+      propertyPath: m_Text
+      value: X
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1602fef8d0fc14a139fe90c67e4a377e, type: 2}
   m_IsPrefabAsset: 0
@@ -1731,6 +1751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0
+  allRollPlanes: []
 --- !u!54 &1434198934
 Rigidbody:
   m_ObjectHideFlags: 0

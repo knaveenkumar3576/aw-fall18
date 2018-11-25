@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - rolloverplane
+  - answerboard
   layers:
   - Default
   - TransparentFX
