@@ -20,12 +20,15 @@ public class PlayerController : MonoBehaviour {
     private string[] operatorList = new string[4] { "+", "-", "x", "/", };
 
     private int[] answerOptions = new int[4];
-
+    DateTime startTime;
 
     //TextMeshPro textMeshPro; 
 
     // Use this for initialization
     void Start() {
+
+        startTime = DateTime.Now;
+
         rb = GetComponent<Rigidbody>();
         operands = new Stack();
         collectAllPlaneObjects();
@@ -149,12 +152,28 @@ public class PlayerController : MonoBehaviour {
         return ComputeResult(operand1, operand2, operation);
     }
 
+
+    public void UpdateTime()
+    {
+        DateTime oldStartTime = startTime;
+
+        startTime = DateTime.Now;
+
+        TimeSpan currentSpan = startTime - oldStartTime;
+
+        Debug.Log("Time Elapsed" + currentSpan);
+    }
+
+
     public void OnCollisionEnter(Collision collision)
     {
+
         string value;
 
         if (collision.gameObject.CompareTag("rolloverplane"))
         {
+            UpdateTime();
+
             value = CollectRollOverAndDestroy(collision);
 
             Debug.Log("Picked the value " + value);
@@ -170,6 +189,8 @@ public class PlayerController : MonoBehaviour {
 
         if (collision.gameObject.CompareTag("answerboard"))
         {
+            UpdateTime();
+
             value = CollectRollOverAndDestroy(collision);
 
             int chosenResult = Convert.ToInt32(value);
