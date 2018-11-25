@@ -8,23 +8,28 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     public float speed;
-    
+
     private Rigidbody rb;
 
     private Stack operands;
-    private int expectedResult;
-    private int touchedResult;
+    private int expectedResultIndex;
 
-    private string[] operatorList = new string[4] {"+", "-", "*", "/",};
-    
+    public GameObject[] allRollPlanes;
+
+    private int[] allOperands = new int[8];
+    private string[] operatorList = new string[4] { "+", "-", "x", "/", };
+
+    private int[] answerOptions = new int[4];
+
+
     //TextMeshPro textMeshPro; 
 
     // Use this for initialization
     void Start() {
         rb = GetComponent<Rigidbody>();
         operands = new Stack();
-        //expectedResult = 0;
-    } 
+        collectAllPlaneObjects();
+    }
 
     void FixedUpdate() {
         float moveHorizontal = Input.GetAxis("Horizontal");
@@ -33,83 +38,152 @@ public class PlayerController : MonoBehaviour {
         rb.AddForce(movement * 10.0f);
     }
 
-    public string GetRollOverValue(Collision collision)
+    public void collectAllPlaneObjects()
     {
-        GameObject originalGameObject = Instantiate(collision.gameObject);
-        GameObject childObject = originalGameObject.transform.GetChild(0).gameObject;
-        TextMeshPro textMeshPro = (TextMeshPro)childObject.GetComponent("TextMeshPro");
-
-        Destroy(collision.gameObject);
-        Destroy(originalGameObject);
-        return (string)textMeshPro.text;
+        Debug.Log("collectAllPlaneObjects");
+        allRollPlanes = GameObject.FindGameObjectsWithTag("rolloverplane");
+        int i = 0;
+        foreach (GameObject rollPlane in allRollPlanes)
+        {
+            string operand = GetRollPlaneValue(rollPlane);
+            if (!Array.Exists(operatorList, element => element == operand))
+            {
+                allOperands[i] = Convert.ToInt32(operand);
+                Debug.Log(allOperands[i]);
+                i++;
+            }
+        }
     }
 
-    public int GetExpectedResult()
+    public void GenerateAnswerOptions()
     {
-        int firstOperand = Convert.ToInt32(operands.Pop());
-        string operatorSelected = (string) operands.Pop();
-        int secondOperand = Convert.ToInt32(operands.Pop());
+        Debug.Log("Generatint Options");
+        System.Random random = new System.Random(); 
+        expectedResultIndex = random.Next(4);
+        answerOptions[expectedResultIndex] = GetExpectedResult();
 
-        int result=0;
+        for (int i = 0; i < 4; i++)
+        {
+            if (i == expectedResultIndex)
+                continue;
+            int randomOperandIndex1 = random.Next(8);
+            int randomOperandIndex2 = random.Next(8);
+            int randomOperatorIndex = random.Next(4);
 
-        switch (operatorSelected)
+            answerOptions[i] = ComputeResult(allOperands[randomOperandIndex1], allOperands[randomOperandIndex2], operatorList[randomOperatorIndex]);
+            Debug.Log("Generated Option " + answerOptions[i]);
+            i++;
+        }
+
+    }
+
+    public void setAnswerOptionsintoPlane()
+    {
+        Debug.Log("Setting Options");
+        GameObject[] answerBoards = GameObject.FindGameObjectsWithTag("answerboard");
+        for (int i = 0; i < answerBoards.Length; i++)
+        {
+            TextMeshPro textMeshPro = GetTextMeshReference(answerBoards[i]);
+            textMeshPro.SetText(answerOptions[i].ToString());
+        }
+    }
+
+    public TextMeshPro GetTextMeshReference(GameObject gameObject)
+    {
+        GameObject childObject = gameObject.transform.GetChild(0).gameObject;
+        TextMeshPro textMeshPro = (TextMeshPro)childObject.GetComponent("TextMeshPro");
+        return textMeshPro;
+    }
+
+    public string GetRollPlaneValue(GameObject gameObject)
+    {
+        TextMeshPro textMeshPro = GetTextMeshReference(gameObject);
+        string value = (string)textMeshPro.text;
+        return value;
+    }
+
+    public string CollectRollOverAndDestroy(Collision collision)
+    {
+        string value;
+        value = GetRollPlaneValue(collision.gameObject);
+        Destroy(collision.gameObject);
+        return value;
+    }
+
+    public int ComputeResult(int operand1, int operand2, string operation)
+    {
+
+        int result = 0;
+
+        switch (operation)
         {
             case "+":
-                result = firstOperand + secondOperand;
+                result = operand1 + operand2;
                 break;
 
             case "-":
-                result = firstOperand - secondOperand;
+                result = operand1 - operand2;
                 break;
 
             case "x":
-                result = firstOperand * secondOperand;
+                result = operand1 * operand2;
                 break;
 
             case "/":
-                result = firstOperand / secondOperand;
+                result = operand1 / operand2;
                 break;
 
             default:
                 Console.WriteLine("Invalid operator");
                 break;
         }
-
         return result;
+    }
+
+    public int GetExpectedResult()
+    {
+        int operand2 = Convert.ToInt32(operands.Pop());
+        string operation = (string) operands.Pop();
+        int operand1 = Convert.ToInt32(operands.Pop());
+
+        return ComputeResult(operand1, operand2, operation);
     }
 
     public void OnCollisionEnter(Collision collision)
     {
         string value;
 
-        if (collision.gameObject.CompareTag("rolloverplane")) {
+        if (collision.gameObject.CompareTag("rolloverplane"))
+        {
+            value = CollectRollOverAndDestroy(collision);
 
-            value = GetRollOverValue(collision);
-
-            Debug.Log("Collected" + value);
+            Debug.Log("Picked the value " + value);
 
             operands.Push(value);
-        }
-
-
-        if (collision.gameObject.CompareTag("answerboard"))
-        {
-            value = GetRollOverValue(collision);
 
             if (operands.Count == 3)
             {
-                int chosenResult = Convert.ToInt32(value);
-                int result = GetExpectedResult();
-                if (chosenResult == result)
-                {
-                    Debug.Log("Win");
-                }
-                else
-                {
-                    Debug.Log("Lose");
-                }
+                GenerateAnswerOptions();
+                setAnswerOptionsintoPlane();
+            }
+        }
+
+        if (collision.gameObject.CompareTag("answerboard"))
+        {
+            value = CollectRollOverAndDestroy(collision);
+
+            int chosenResult = Convert.ToInt32(value);
+            Debug.Log("Chosen Result " + chosenResult);
+            Debug.Log("Correct Result " + answerOptions[expectedResultIndex]);
+
+            if (chosenResult == answerOptions[expectedResultIndex])
+            {
+                Debug.Log("Win");
+            }
+            else
+            {
+                Debug.Log("Lose");
             }
         }
     }
-    
 }
