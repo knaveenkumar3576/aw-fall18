@@ -35,7 +35,7 @@ public class BridgeManager : MonoBehaviour {
         {
             int num = 0;
             while (num == 0)
-                num = random.Next(10 * (numDigits - 1), (10 * numDigits) - 1);
+                num = random.Next((int)Math.Pow(10, numDigits - 1), (int)Math.Pow(10,numDigits));
             allOperands.Add(num);
             numberList.Add(num);
             //Debug.Log(numberList[i]);
@@ -45,7 +45,7 @@ public class BridgeManager : MonoBehaviour {
 
 
     void Start () {
-        bridgeCount = 1;
+        bridgeCount = 0;
         allOperands = new List<int>();
         operandList1 = new List<int>();
         operandList2 = new List<int>();
@@ -86,6 +86,8 @@ public class BridgeManager : MonoBehaviour {
         List<GameObject> rollplanes = FindRollPlanes(go.transform, "rollplane");
         Debug.Log("Rollplanes count: " + rollplanes.Count);
 
+        bridgeCount++;
+
         if (bridgeCount == 1 || bridgeCount == 3)
         {
             List<int> numbers = generateNumbers();
@@ -118,16 +120,20 @@ public class BridgeManager : MonoBehaviour {
         else if (bridgeCount == 4) {
             for (int i = 0; i < 4; i++) {
                 rollplanes[i].tag = "answerboard";
+
+                Renderer[] rend = rollplanes[i].GetComponentsInChildren<Renderer>();
+
+                //Set the main Color of the Material to green
+                rend[0].material.shader = Shader.Find("_Color");
+                rend[0].material.SetColor("_Color", Color.green);
+
+                //Find the Specular shader and change its Color to red
+                rend[0].material.shader = Shader.Find("Specular");
+                rend[0].material.SetColor("_SpecColor", Color.red);
             }
+            bridgeCount = 0;
         }
 
-        if (bridgeCount >= 4)
-        {
-            bridgeCount = 1;
-            //BridgeManager.allOperands.Clear();
-        }
-        else
-            bridgeCount++;
         Debug.Log("Bridge count: " + bridgeCount);
         
 

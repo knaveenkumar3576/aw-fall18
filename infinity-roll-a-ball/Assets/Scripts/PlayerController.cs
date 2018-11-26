@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour {
         answerOptions[expectedResultIndex] = GetExpectedResult();
         expectedResult = answerOptions[expectedResultIndex];
 
-        Debug.Log(BridgeManager.allOperands);
+        Debug.Log("All operands" + BridgeManager.allOperands.Count);
 
         for (int i = 0; i < 4; i++)
         {
@@ -89,14 +89,15 @@ public class PlayerController : MonoBehaviour {
             int randomOperandIndex2 = random.Next(8);
             int randomOperatorIndex = random.Next(4);
 
-            Debug.Log(randomOperandIndex1);
-            Debug.Log(randomOperandIndex2);
-            Debug.Log(randomOperatorIndex);
+            Debug.Log("Operand1 " + BridgeManager.allOperands[randomOperandIndex1]);
+            Debug.Log("Operand2 " + BridgeManager.allOperands[randomOperandIndex2]);
+            Debug.Log("Operator" +  operatorList[randomOperatorIndex]);
 
             answerOptions[i] = ComputeResult(BridgeManager.allOperands[randomOperandIndex1], BridgeManager.allOperands[randomOperandIndex2], operatorList[randomOperatorIndex]);
             Debug.Log("Generated Option " + answerOptions[i]);
-            i++;
         }
+
+        BridgeManager.allOperands.RemoveRange(0, 8);
 
     }
 
@@ -187,16 +188,28 @@ public class PlayerController : MonoBehaviour {
 
 
         }
-        
+
     }
 
-
     void FixedUpdate() {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-        rb.AddForce(movement * speed);
-
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            // Player movement in desktop devices
+            // Definition of force vector X and Y components
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveVertical = Input.GetAxis("Vertical");
+            // Building of force vector
+            Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+            // Adding force to rigidbody
+            rb.AddForce(movement * speed);
+        }
+        else
+        {
+            // Player movement in mobile devices
+            // Building of force vector 
+            Vector3 movement = new Vector3(Input.acceleration.x, 0.0f, Input.acceleration.y);
+            // Adding force to rigidbody
+            rb.AddForce(movement * speed);
+        }
     }
 }
