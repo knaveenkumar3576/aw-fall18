@@ -16,6 +16,15 @@ public class SqlliteSetup : MonoBehaviour {
         IDbConnection dbcon = new SqliteConnection(connection);
         dbcon.Open();
 
+        //drop table if exist *comment if you don't want table to drop*
+        IDbCommand dbdmd;
+        dbdmd = dbcon.CreateCommand();
+
+        string q_dropTable = "DROP TABLE IF EXISTS my_table1";
+        dbdmd.CommandText = q_dropTable;
+        dbdmd.ExecuteReader();
+
+
         // Create table
         IDbCommand dbcmd;
         dbcmd = dbcon.CreateCommand();
@@ -33,7 +42,7 @@ public class SqlliteSetup : MonoBehaviour {
         // Read and print all values in table
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
-        string query = "SELECT * FROM my_table";
+        string query = "SELECT * FROM my_table1";
         cmnd_read.CommandText = query;
         reader = cmnd_read.ExecuteReader();
 
