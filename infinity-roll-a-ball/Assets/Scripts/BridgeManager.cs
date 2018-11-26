@@ -19,8 +19,8 @@ public class BridgeManager : MonoBehaviour {
 
     string[] operators = new string[] {"+", "-", "x", "/"};
     public int bridgeCount;
-    public static List<int> operandList1;
-    public static List<int> operandList2;
+    //public static List<int> operandList1;
+    //public static List<int> operandList2;
     public static List<int> allOperands;
 
     System.Random random = new System.Random();
@@ -47,14 +47,22 @@ public class BridgeManager : MonoBehaviour {
     void Start () {
         bridgeCount = 0;
         allOperands = new List<int>();
-        operandList1 = new List<int>();
-        operandList2 = new List<int>();
+        //operandList1 = new List<int>();
+        //operandList2 = new List<int>();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         for (int i = 0; i < bridgeAmount; i++){
             SpawnBridge();
         }
-       
+    }
 
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (playerTransform.position.z > (spawnZ - bridgeAmount * bridgeLength))
+        {
+            SpawnBridge();
+        }
     }
 
     public List<GameObject> FindRollPlanes(Transform parent, string tag) {
@@ -68,77 +76,86 @@ public class BridgeManager : MonoBehaviour {
                 rollPlanes.AddRange(FindRollPlanes(child, tag));
             }
         }
+
+        Debug.Log("Rollplanes count: " + rollPlanes.Count);
+
         return rollPlanes;
     }
 
-	// Update is called once per frame
-	void Update () {
-        if(playerTransform.position.z > (spawnZ - bridgeAmount * bridgeLength)){
-            SpawnBridge();
+    void GenerateAndSetSelectionNumbers(GameObject bridgeObject)
+    {
+        List<int> numbers = generateNumbers();
+        List<GameObject> rollPlanes = FindRollPlanes(bridgeObject.transform, "rollplane");
+        
+        //if (bridgeCount == 1) {
+        //    operandList1 = new List<int>(numbers);
+        //}
+        //else if (bridgeCount == 3) {
+        //    operandList2 = new List<int>(numbers);
+        //}
+
+        for (int i = 0; i < 4; i++)
+        {
+            Debug.Log(rollPlanes[i]);
+            Debug.Log(rollPlanes[i].transform.childCount);
+            GameObject childObject = rollPlanes[i].transform.GetChild(0).gameObject;
+            TextMeshPro textMeshPro = (TextMeshPro)childObject.GetComponent("TextMeshPro");
+            textMeshPro.SetText(numbers[i].ToString());
         }
-	}
+    }
+
+
+    void SetSelectionOperators(GameObject bridgeObject)
+    {
+        List<GameObject> rollPlanes = FindRollPlanes(bridgeObject.transform, "rollplane");
+
+        for (int i = 0; i < 4; i++)
+        {
+            Debug.Log(rollPlanes[i]);
+            Debug.Log(rollPlanes[i].transform.childCount);
+            GameObject childObject = rollPlanes[i].transform.GetChild(0).gameObject;
+            TextMeshPro textMeshPro = (TextMeshPro)childObject.GetComponent("TextMeshPro");
+            textMeshPro.SetText(operators[i]);
+        }
+    }
+    void GeneratSelectionAnswers(GameObject bridgeObject)
+    {
+        List<GameObject> rollPlanes = FindRollPlanes(bridgeObject.transform, "rollplane");
+        for (int i = 0; i < 4; i++)
+        {
+            rollPlanes[i].tag = "answerboard";
+            Renderer[] rend = rollPlanes[i].GetComponentsInChildren<Renderer>();
+            rend[0].material.shader = Shader.Find("_Color");
+            rend[0].material.SetColor("_Color", Color.green);
+            rend[0].material.shader = Shader.Find("Specular");
+            rend[0].material.SetColor("_SpecColor", Color.red);
+        }
+    }
 
     void SpawnBridge(int prefabIndex = -1){
 
-        GameObject go;
-        go = Instantiate(bridgePreFabs[0]) as GameObject;
-        // Get all roll planes in the game object
-        List<GameObject> rollplanes = FindRollPlanes(go.transform, "rollplane");
-        Debug.Log("Rollplanes count: " + rollplanes.Count);
+        GameObject bridgeObject;
+        bridgeObject = Instantiate(bridgePreFabs[0]) as GameObject;
 
         bridgeCount++;
 
         if (bridgeCount == 1 || bridgeCount == 3)
         {
-            List<int> numbers = generateNumbers();
-            if (bridgeCount == 1) {
-                operandList1 = new List<int>(numbers);
-            }
-            else if (bridgeCount == 3) {
-                operandList2 = new List<int>(numbers);
-            }
-
-            for (int i = 0; i < 4; i++)
-            {
-                Debug.Log(rollplanes[i]);
-                Debug.Log(rollplanes[i].transform.childCount);
-                GameObject childObject = rollplanes[i].transform.GetChild(0).gameObject;
-                TextMeshPro textMeshPro = (TextMeshPro)childObject.GetComponent("TextMeshPro");
-                textMeshPro.SetText(numbers[i].ToString());
-            }
+            GenerateAndSetSelectionNumbers(bridgeObject);
         }
         else if (bridgeCount == 2) {
-            for (int i = 0; i < 4; i++)
-            {
-                Debug.Log(rollplanes[i]);
-                Debug.Log(rollplanes[i].transform.childCount);
-                GameObject childObject = rollplanes[i].transform.GetChild(0).gameObject;
-                TextMeshPro textMeshPro = (TextMeshPro)childObject.GetComponent("TextMeshPro");
-                textMeshPro.SetText(operators[i]);
-            }
+            SetSelectionOperators(bridgeObject);
         }
+
         else if (bridgeCount == 4) {
-            for (int i = 0; i < 4; i++) {
-                rollplanes[i].tag = "answerboard";
-
-                Renderer[] rend = rollplanes[i].GetComponentsInChildren<Renderer>();
-
-                //Set the main Color of the Material to green
-                rend[0].material.shader = Shader.Find("_Color");
-                rend[0].material.SetColor("_Color", Color.green);
-
-                //Find the Specular shader and change its Color to red
-                rend[0].material.shader = Shader.Find("Specular");
-                rend[0].material.SetColor("_SpecColor", Color.red);
-            }
+            GeneratSelectionAnswers(bridgeObject);
             bridgeCount = 0;
         }
 
         Debug.Log("Bridge count: " + bridgeCount);
-        
 
-        go.transform.SetParent(transform);
-        go.transform.position = Vector3.forward * spawnZ;
+        bridgeObject.transform.SetParent(transform);
+        bridgeObject.transform.position = Vector3.forward * spawnZ;
         spawnZ += bridgeLength;
          
     }
