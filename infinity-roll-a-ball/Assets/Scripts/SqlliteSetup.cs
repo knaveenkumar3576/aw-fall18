@@ -44,7 +44,7 @@ public class SqlliteSetup : MonoBehaviour {
         insertData(9, "Normal", "-", 0, "W");
         insertData(10, "Death", "*", 0, "L");
 
-        getData("-");
+        getData("+");
     }
 
     void insertData(int level, string gameType, string operation, int time_taken, string status)
