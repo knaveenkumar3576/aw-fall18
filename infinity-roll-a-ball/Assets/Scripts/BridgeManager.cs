@@ -8,7 +8,7 @@ public class BridgeManager : MonoBehaviour {
 
     //const int ANSWERBOARD = 2;
     //const int OPERATOR = 1;
-
+    //change check
     // Use this for initialization
     public GameObject[] bridgePreFabs;
 
