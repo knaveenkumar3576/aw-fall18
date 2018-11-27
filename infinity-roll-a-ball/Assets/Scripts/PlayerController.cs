@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour {
     public Text TotalPoints;
     public Text Calculation;
     public Text Level;
+    public Text Display;
+    public Text GameOver;
+    public GameObject Menu;
     //public Text TotalPointsText;
     public int totalPoints;
     public int level;
@@ -41,6 +44,9 @@ public class PlayerController : MonoBehaviour {
         totalPoints = 0;
         Level.text = "1";
         TotalPoints.text = "0";
+        GameOver.text = "Game Over!";
+
+        Menu.SetActive(false); 
     }
 
 	// Update is called once per frame
@@ -153,6 +159,25 @@ public class PlayerController : MonoBehaviour {
         return value;
     }
 
+    public void clearDisplay() {
+        Display.text = "";
+    }
+
+    public void HideMenu()
+    {
+        Menu.SetActive(false);
+        //.alpha = 0f; //this makes everything transparent
+        //canvasGroup.blocksRaycasts = false; //this prevents the UI element to receive input events
+    }
+
+    public void ShowMenu()
+    {
+        Menu.SetActive(true);
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
+
+
     public void OnCollisionEnter(Collision collision)
     {
 
@@ -175,6 +200,12 @@ public class PlayerController : MonoBehaviour {
                 GenerateAnswerOptions();
                 setAnswerOptionsintoPlane();
             }
+
+            Calculation.text += (value + " ");
+            calculationClear++;
+            if (calculationClear == 3)
+                Calculation.text += "= ?";
+
         }
 
         if (collision.gameObject.CompareTag("answerboard"))
@@ -195,6 +226,9 @@ public class PlayerController : MonoBehaviour {
                 TotalPoints.text = totalPoints.ToString();
                 level = level + 1;
                 Level.text = level.ToString();
+                Display.color = Color.green;
+                Display.text = "Right Answer!";
+                Invoke("clearDisplay", 1.5f);
                 Debug.Log("Win");
             }
             else
@@ -202,8 +236,13 @@ public class PlayerController : MonoBehaviour {
                 totalPoints = totalPoints - 1;
                 TotalPoints.text = totalPoints.ToString();
                 if (totalPoints < 0) {
+                    ShowMenu();
+                    speed = 0;
                     Debug.Log("Game Over!");
                 }
+                Display.color = Color.red;
+                Display.text = "Wrong Answer!";
+                Invoke("clearDisplay", 1.5f);
                 Debug.Log("Lose");
             }
 
@@ -212,8 +251,8 @@ public class PlayerController : MonoBehaviour {
                 Destroy(answerboards[i]);
             }
 
-
-
+            calculationClear = 0;
+            Calculation.text = "";
         }
 
     }
