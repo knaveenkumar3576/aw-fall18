@@ -3,12 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 //using static BridgeManager;
 
 public class PlayerController : MonoBehaviour {
 
     // Use this for initialization
     public float speed;
+
+    public Text TotalPoints;
+    public Text Calculation;
+    public Text Level;
+    //public Text TotalPointsText;
+    public int totalPoints;
+    public int level;
+
+
+    private int calculationClear;
 
     private Stack operands;
 
@@ -20,9 +31,16 @@ public class PlayerController : MonoBehaviour {
     private int[] answerOptions = new int[4];
 
     private Rigidbody rb;
+
 	void Start () {
         rb = GetComponent<Rigidbody>();
-        operands = new Stack();	
+        operands = new Stack();
+
+        calculationClear = 0; 
+        level = 1;
+        totalPoints = 0;
+        Level.text = "1";
+        TotalPoints.text = "0";
     }
 
 	// Update is called once per frame
@@ -172,10 +190,19 @@ public class PlayerController : MonoBehaviour {
 
             if (chosenResult == expectedResult)
             {
+                totalPoints = totalPoints + 1;
+                TotalPoints.text = totalPoints.ToString();
+                level = level + 1;
+                Level.text = level.ToString();
                 Debug.Log("Win");
             }
             else
             {
+                totalPoints = totalPoints - 1;
+                TotalPoints.text = totalPoints.ToString();
+                if (totalPoints < 0) {
+                    Debug.Log("Game Over!");
+                }
                 Debug.Log("Lose");
             }
 
