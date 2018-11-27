@@ -124,11 +124,11 @@ public class BridgeManager : MonoBehaviour {
         for (int i = 0; i < 4; i++)
         {
             rollPlanes[i].tag = "answerboard";
-            Renderer[] rend = rollPlanes[i].GetComponentsInChildren<Renderer>();
-            rend[0].material.shader = Shader.Find("_Color");
-            rend[0].material.SetColor("_Color", Color.green);
-            rend[0].material.shader = Shader.Find("Specular");
-            rend[0].material.SetColor("_SpecColor", Color.red);
+            //Renderer[] rend = rollPlanes[i].GetComponentsInChildren<Renderer>();
+            //rend[0].material.shader = Shader.Find("_Color");
+            //rend[0].material.SetColor("_Color", Color.green);
+            //rend[0].material.shader = Shader.Find("Specular");
+            //rend[0].material.SetColor("_SpecColor", Color.red);
         }
     }
 
