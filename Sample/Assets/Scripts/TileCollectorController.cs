@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TileCollectorController : MonoBehaviour
 {
+
     public GameObject player;
 
     private Vector3 offset;
@@ -28,7 +29,7 @@ public class TileCollectorController : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("OnCollisionEnterCollector" + other.gameObject);
+        Debug.Log("OnCollisionEnterCollector" + collision.gameObject);
 
         if (other.gameObject.CompareTag("rolloverplane") || other.gameObject.CompareTag("answerboard"))
         {
