@@ -20,7 +20,9 @@ public class PlayerController : MonoBehaviour {
     //public Text TotalPointsText;
     public int totalPoints;
     public int level;
+    private string operation;
 
+    DateTime startTime;
 
     private int calculationClear;
 
@@ -28,6 +30,8 @@ public class PlayerController : MonoBehaviour {
 
     private int expectedResultIndex;
     private int expectedResult;
+
+    SqlliteSetup sqlclient;
 
     private string[] operatorList = new string[4] { "+", "-", "x", "/", };
 
@@ -45,6 +49,7 @@ public class PlayerController : MonoBehaviour {
         Level.text = "1";
         TotalPoints.text = "0";
         GameOver.text = "Game Over!";
+        sqlclient = new SqlliteSetup();
 
         Menu.SetActive(false); 
     }
@@ -87,7 +92,7 @@ public class PlayerController : MonoBehaviour {
     public int GetExpectedResult()
     {
         int operand2 = Convert.ToInt32(operands.Pop());
-        string operation = (string)operands.Pop();
+        operation = (string)operands.Pop();
         int operand1 = Convert.ToInt32(operands.Pop());
 
         
@@ -177,6 +182,20 @@ public class PlayerController : MonoBehaviour {
         rb.angularVelocity = Vector3.zero;
     }
 
+    public int UpdateTime()
+    {
+        DateTime oldStartTime = startTime;
+
+        startTime = DateTime.Now;
+
+        TimeSpan currentSpan = startTime - oldStartTime;
+
+        Debug.Log("Time Elapsed" + currentSpan);
+
+        int milliseconds = currentSpan.Milliseconds;
+
+        return milliseconds;
+    }
 
     public void OnCollisionEnter(Collision collision)
     {
@@ -219,6 +238,7 @@ public class PlayerController : MonoBehaviour {
             int chosenResult = Convert.ToInt32(value);
             Debug.Log("Chosen Result " + chosenResult);
             Debug.Log("Correct Result " + answerOptions[expectedResultIndex]);
+            
 
             if (chosenResult == expectedResult)
             {
@@ -230,6 +250,9 @@ public class PlayerController : MonoBehaviour {
                 Display.text = "Right Answer!";
                 Invoke("clearDisplay", 1.5f);
                 Debug.Log("Win");
+                int time = UpdateTime();
+                sqlclient.insertData(level, "", operation, time, "win");
+                //sqlclient.getData(operation);
             }
             else
             {
@@ -244,6 +267,9 @@ public class PlayerController : MonoBehaviour {
                 Display.text = "Wrong Answer!";
                 Invoke("clearDisplay", 1.5f);
                 Debug.Log("Lose");
+                int time = UpdateTime();
+                sqlclient.insertData(level, "", operation, time, "lose");
+                //sqlclient.getData(operation);
             }
 
             GameObject[] answerboards = GameObject.FindGameObjectsWithTag("answerboard");

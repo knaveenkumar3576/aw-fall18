@@ -47,7 +47,7 @@ public class SqlliteSetup : MonoBehaviour {
         getData("+");
     }
 
-    void insertData(int level, string gameType, string operation, int time_taken, string status)
+    public void insertData(int level, string gameType, string operation, int time_taken, string status)
     {
         IDbConnection dbcon = new SqliteConnection(connection);
         dbcon.Open();
@@ -58,7 +58,7 @@ public class SqlliteSetup : MonoBehaviour {
         dbcon.Close();
     }
 
-    void getData(string operation)
+    public void getData(string operation)
     {
         IDbConnection dbcon = new SqliteConnection(connection);
         dbcon.Open();
