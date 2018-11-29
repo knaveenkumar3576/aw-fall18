@@ -38,8 +38,10 @@ public class PlayerController : MonoBehaviour {
     private int[] answerOptions = new int[4];
 
     private Rigidbody rb;
+    private Vector2 touchStart, touchEnd;
 
-	void Start () {
+
+    void Start () {
         rb = GetComponent<Rigidbody>();
         operands = new Stack();
 
@@ -54,10 +56,26 @@ public class PlayerController : MonoBehaviour {
         Menu.SetActive(false); 
     }
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Update is called once per frame
+    void Update()
+    {
+        //Camera cam = GameObject.FindGameOb//jectsWithTag("MainCamera");
+        // Swipe start
+        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            touchStart = Input.GetTouch(0).position;
+        }
+        // Swipe end
+        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        {
+            touchEnd = Input.GetTouch(0).position;
+            float cameraFacing = Camera.main.transform.eulerAngles.y;
+            Vector2 swipeVector = touchEnd - touchStart;
+            Vector3 inputVector = new Vector3(swipeVector.x, 0.0f, swipeVector.y);
+            Vector3 movement = Quaternion.Euler(0.0f, cameraFacing, 0.0f) * Vector3.Normalize(inputVector) * 2;
+            rb.velocity = movement;
+        }
+    }
 
     public int ComputeResult(int operand1, int operand2, string operation)
     {
