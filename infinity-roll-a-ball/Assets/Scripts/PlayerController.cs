@@ -250,8 +250,8 @@ public class PlayerController : MonoBehaviour {
                 Display.text = "Right Answer!";
                 Invoke("clearDisplay", 1.5f);
                 Debug.Log("Win");
-                int time = UpdateTime();
-                sqlclient.insertData(level, "", operation, time, "win");
+                //int time = UpdateTime();
+                //sqlclient.insertData(level, "", operation, time, "win");
                 //sqlclient.getData(operation);
             }
             else
@@ -267,8 +267,8 @@ public class PlayerController : MonoBehaviour {
                 Display.text = "Wrong Answer!";
                 Invoke("clearDisplay", 1.5f);
                 Debug.Log("Lose");
-                int time = UpdateTime();
-                sqlclient.insertData(level, "", operation, time, "lose");
+                //int time = UpdateTime();
+                //sqlclient.insertData(level, "", operation, time, "lose");
                 //sqlclient.getData(operation);
             }
 
