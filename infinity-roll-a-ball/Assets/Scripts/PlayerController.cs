@@ -8,6 +8,11 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
+    private float[] thresholdSpeed = new float[2] {14, 25};
+    private float[] thresholdNumberComplexity = new float[2] {1, 10};
+    private float[] thresholdWallHeightScaleY = new float[2] { 0.2f, 1.0f };
+    private float[] thresholdPlaneLengthScaleZ = new float[2] { 0.5f, 1.0f };
+
     // Use this for initialization
     public float speed;
 
@@ -197,6 +202,114 @@ public class PlayerController : MonoBehaviour {
         return milliseconds;
     }
 
+    
+    public void ModifyNumbers(int rate)
+    {
+        int newComplexity = BridgeManager.numComplexity + rate;
+
+        if (newComplexity >= thresholdNumberComplexity[0] && newComplexity <= thresholdNumberComplexity[1])
+        {
+            BridgeManager.numComplexity = newComplexity;
+        }
+
+    }
+
+    public void ModifyWallHeightScale(float rate)
+    {
+        float newWallHeightScaleY = BridgeManager.wallHeightScaleY + rate;
+
+        if (newWallHeightScaleY >= thresholdWallHeightScaleY[0] && newWallHeightScaleY <= thresholdWallHeightScaleY[1])
+        {
+            BridgeManager.wallHeightScaleY = newWallHeightScaleY;
+        }
+    }
+
+    public void ModifyPlaneScale(float rate)
+    {
+        float newPlaneLengthScaleZ = BridgeManager.planeLengthScaleZ + rate;
+
+        if (newPlaneLengthScaleZ >= thresholdPlaneLengthScaleZ[0] && newPlaneLengthScaleZ <= thresholdPlaneLengthScaleZ[1])
+        {
+            BridgeManager.planeLengthScaleZ = newPlaneLengthScaleZ;
+        }
+        
+    }
+
+    public void ModifySpeed(float rate)
+    {
+        float newSpeed = speed + speed / rate;
+
+        if(newSpeed >= thresholdSpeed[0] && newSpeed <= thresholdSpeed[1])
+        {
+            speed = newSpeed;
+        }
+    }
+
+    public void IncreaseGameplayDifficulty()
+    {
+
+        System.Random random = new System.Random();
+        int difficultyIndex = random.Next(0, 4);
+
+        switch (difficultyIndex)
+        {
+            case 0:
+                ModifySpeed(4);
+                Display.text += " Speed up";
+                break;
+
+            case 1:
+                ModifyPlaneScale(-0.2f);
+                Display.text += " Planes squeezed";
+                break;
+
+            case 2:
+                ModifyNumbers(1);
+                Display.text += " Big Numbers coming up";
+                break;
+
+            case 3:
+                ModifyWallHeightScale(-0.1f);
+                Display.text += " Walls Lowered";
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
+    public void DecreaseGameplayDifficulty()
+    {
+        System.Random random = new System.Random();
+        int difficultyIndex = random.Next(0, 4);
+
+        switch (difficultyIndex)
+        {
+            case 0:
+                ModifySpeed(-8);
+                Display.text += " Speed down";
+                break;
+            case 1:
+                ModifyPlaneScale(0.2f);
+                Display.text += " Planes stretched";
+                break;
+
+            case 2:
+                ModifyNumbers(-1);
+                Display.text += " Small Numbers coming up";
+                break;
+
+            case 3:
+                ModifyWallHeightScale(0.1f);
+                Display.text += " Walls Raised";
+                break;
+
+            default:
+                break;
+        }
+    }
+
     public void OnCollisionEnter(Collision collision)
     {
 
@@ -250,6 +363,10 @@ public class PlayerController : MonoBehaviour {
                 Display.text = "Right Answer!";
                 Invoke("clearDisplay", 1.5f);
                 Debug.Log("Win");
+
+                // increasing the difficulty
+                IncreaseGameplayDifficulty();
+
                 //int time = UpdateTime();
                 //sqlclient.insertData(level, "", operation, time, "win");
                 //sqlclient.getData(operation);
@@ -267,6 +384,10 @@ public class PlayerController : MonoBehaviour {
                 Display.text = "Wrong Answer!";
                 Invoke("clearDisplay", 1.5f);
                 Debug.Log("Lose");
+
+                // increasing the difficulty
+                DecreaseGameplayDifficulty();
+
                 //int time = UpdateTime();
                 //sqlclient.insertData(level, "", operation, time, "lose");
                 //sqlclient.getData(operation);

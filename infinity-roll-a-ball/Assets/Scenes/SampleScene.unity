@@ -1258,7 +1258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6c87494c0ccb4586af6a70139b1c4b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 5
   TotalPoints: {fileID: 317809676}
   Calculation: {fileID: 825604347}
   Level: {fileID: 869543147}

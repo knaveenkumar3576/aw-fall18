@@ -24,7 +24,12 @@ public class BridgeManager : MonoBehaviour {
     public static List<int> allOperands;
 
     System.Random random = new System.Random();
-    int numDigits = 1;
+
+    public static int numComplexity = 1;
+    public static float wallHeightScaleY = 1.0f;
+    public static float planeLengthScaleZ = 1.0f;
+
+
     int finalAnswer = 0;
 
     List<int> generateNumbers() {
@@ -35,7 +40,7 @@ public class BridgeManager : MonoBehaviour {
         {
             int num = 0;
             while (num == 0)
-                num = random.Next((int)Math.Pow(10, numDigits - 1), (int)Math.Pow(10,numDigits));
+                num = random.Next(1* numComplexity, 9*numComplexity);
             allOperands.Add(num);
             numberList.Add(num);
             //Debug.Log(numberList[i]);
@@ -81,6 +86,8 @@ public class BridgeManager : MonoBehaviour {
 
         return rollPlanes;
     }
+
+
 
     void GenerateAndSetSelectionNumbers(GameObject bridgeObject)
     {
@@ -137,6 +144,32 @@ public class BridgeManager : MonoBehaviour {
         GameObject bridgeObject;
         bridgeObject = Instantiate(bridgePreFabs[0]) as GameObject;
 
+        List<GameObject> walls = new List<GameObject>();
+        GameObject wall = null;
+
+        for (int i = 0; i < bridgeObject.transform.childCount; i++)
+        {
+            GameObject gameObj = bridgeObject.transform.GetChild(i).gameObject;
+            if (gameObj.tag == "sidewalls")
+            {
+                wall = gameObj;
+                for (int j = 0; j < wall.transform.childCount; j++)
+                {
+                    Vector3 scale = wall.transform.GetChild(j).localScale;
+                    wall.transform.GetChild(j).localScale = new Vector3(scale.x, wallHeightScaleY, scale.z);
+                }
+            }
+
+            if (gameObj.tag == "plane")
+            {
+                //Vector3 planeScale = gameObj.transform.localScale;
+                //gameObj.transform.localScale = new Vector3(planeScale.x, planeScale.y, planeLengthScaleZ);
+                //Vector3 planePosition = gameObj.transform.position;
+                //gameObj.transform.position = new Vector3(planePosition.x, planePosition.y, planePosition.z - (planeLengthScaleZ * bridgeLength));
+            }
+
+        }
+
         bridgeCount++;
 
         if (bridgeCount == 1 || bridgeCount == 3)
@@ -155,7 +188,9 @@ public class BridgeManager : MonoBehaviour {
         Debug.Log("Bridge count: " + bridgeCount);
 
         bridgeObject.transform.SetParent(transform);
+
         bridgeObject.transform.position = Vector3.forward * spawnZ;
+
         spawnZ += bridgeLength;
          
     }
