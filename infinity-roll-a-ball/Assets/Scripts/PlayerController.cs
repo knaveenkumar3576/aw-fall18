@@ -40,6 +40,8 @@ public class PlayerController : MonoBehaviour {
 
     private string[] operatorList = new string[4] { "+", "-", "x", "/", };
 
+    private Vector2 touchStart, touchEnd;
+
     private int[] answerOptions = new int[4];
 
     private Rigidbody rb;
@@ -59,10 +61,25 @@ public class PlayerController : MonoBehaviour {
         Menu.SetActive(false); 
     }
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Update is called once per frame
+    void Update()
+    {
+        // Swipe start
+        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            touchStart = Input.GetTouch(0).position;
+        }
+        // Swipe end
+        if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        {
+            touchEnd = Input.GetTouch(0).position;
+            float cameraFacing = Camera.main.transform.eulerAngles.y;
+            Vector2 swipeVector = touchEnd - touchStart;
+            Vector3 inputVector = new Vector3(swipeVector.x, 0.0f, swipeVector.y);
+            Vector3 movement = Quaternion.Euler(0.0f, cameraFacing, 0.0f) * Vector3.Normalize(inputVector);
+            rb.velocity = movement * speed/1.50f;
+        }
+    }
 
     public int ComputeResult(int operand1, int operand2, string operation)
     {
@@ -404,25 +421,25 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-    void FixedUpdate() {
-        if (SystemInfo.deviceType == DeviceType.Desktop)
-        {
-            // Player movement in desktop devices
-            // Definition of force vector X and Y components
-            float moveHorizontal = Input.GetAxis("Horizontal");
-            float moveVertical = Input.GetAxis("Vertical");
-            // Building of force vector
-            Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-            // Adding force to rigidbody
-            rb.AddForce(movement * speed);
-        }
-        else
-        {
-            // Player movement in mobile devices
-            // Building of force vector 
-            Vector3 movement = new Vector3(Input.acceleration.x, 0.0f, Input.acceleration.y);
-            // Adding force to rigidbody
-            rb.AddForce(movement * speed);
-        }
-    }
+    //void FixedUpdate() {
+    //    if (SystemInfo.deviceType == DeviceType.Desktop)
+    //    {
+    //        // Player movement in desktop devices
+    //        // Definition of force vector X and Y components
+    //        float moveHorizontal = Input.GetAxis("Horizontal");
+    //        float moveVertical = Input.GetAxis("Vertical");
+    //        // Building of force vector
+    //        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+    //        // Adding force to rigidbody
+    //        rb.AddForce(movement * speed);
+    //    }
+    //    else
+    //    {
+    //        // Player movement in mobile devices
+    //        // Building of force vector 
+    //        Vector3 movement = new Vector3(Input.acceleration.x, 0.0f, Input.acceleration.y);
+    //        // Adding force to rigidbody
+    //        rb.AddForce(movement * speed);
+    //    }
+    //}
 }
